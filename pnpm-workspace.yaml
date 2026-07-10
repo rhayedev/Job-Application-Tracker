@@ -2,9 +2,19 @@ packages:
   - "packages/*"
   - "apps/*"
 allowBuilds:
+  "@parcel/watcher": true
   "@scarf/scarf": false
   "@swc/core": true
   esbuild: true
+  lmdb: true
   mongodb-memory-server: true
+  msgpackr-extract: true
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - "@angular-devkit/architect@0.2200.6"
+  - "@angular-devkit/core@22.0.6"
+  - "@angular-devkit/schematics@22.0.6"
+  - "@angular/build@22.0.6"
+  - "@angular/cli@22.0.6"
+  - "@schematics/angular@22.0.6"
