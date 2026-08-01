@@ -56,6 +56,12 @@ jobs:
           done
           exit 1
 
+      - name: Prune stale Docker build cache and images
+        if: always()
+        run: |
+          docker builder prune -f --filter "until=72h"
+          docker image prune -f --filter "until=72h"
+
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
     runs-on: [self-hosted, dev]
@@ -102,3 +108,9 @@ jobs:
             docker compose -f docker-compose.dev.yml logs "$s" --tail=100
           done
           exit 1
+
+      - name: Prune stale Docker build cache and images
+        if: always()
+        run: |
+          docker builder prune -f --filter "until=72h"
+          docker image prune -f --filter "until=72h"
