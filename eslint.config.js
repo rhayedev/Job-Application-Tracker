@@ -11,6 +11,7 @@ export default tseslint.config(
       "**/build/**",
       "**/coverage/**",
       "**/.next/**",
+      "**/.angular/**",
       "**/storybook-static/**",
       "**/*.tsbuildinfo",
       "**/playwright-report/**",

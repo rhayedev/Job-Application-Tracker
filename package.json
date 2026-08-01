@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@11.9.0",
   "engines": {
-    "node": ">=22.13"
+    "node": ">=22.22.3"
   },
   "scripts": {
     "test": "pnpm -r test",
@@ -25,6 +25,6 @@
     "prettier": "^3.9.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.63.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   }
 }
