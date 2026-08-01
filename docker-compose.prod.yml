@@ -25,7 +25,7 @@ services:
       mongo-prod:
         condition: service_healthy
     environment:
-      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo-prod:27017/?authSource=admin
+      MONGODB_URI: ${MONGODB_URI}
       MONGODB_DB_NAME: ${MONGODB_DB_NAME}
       PORT: 4000
       WEB_ANGULAR_ORIGIN: ${WEB_ANGULAR_ORIGIN}
@@ -43,7 +43,7 @@ services:
       mongo-prod:
         condition: service_healthy
     environment:
-      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo-prod:27017/?authSource=admin
+      MONGODB_URI: ${MONGODB_URI}
       MONGODB_DB_NAME: ${MONGODB_DB_NAME}
       NODE_ENV: production
       PORT: 3000

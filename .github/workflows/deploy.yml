@@ -25,6 +25,12 @@ jobs:
       - name: Ensure external "edge" network exists
         run: docker network create edge 2>/dev/null || true
 
+      - name: Build MongoDB URI (URL-encoded credentials)
+        run: |
+          URI="mongodb://$(jq -rn --arg v "$MONGO_ROOT_USERNAME" '$v|@uri'):$(jq -rn --arg v "$MONGO_ROOT_PASSWORD" '$v|@uri')@mongo-prod:27017/?authSource=admin"
+          echo "::add-mask::$URI"
+          echo "MONGODB_URI=$URI" >> "$GITHUB_ENV"
+
       - name: Deploy edge (Caddy + DDNS) and prod stack
         run: docker compose -f docker-compose.edge.yml -f docker-compose.prod.yml up -d --build
 
@@ -71,6 +77,12 @@ jobs:
 
       - name: Ensure external "edge" network exists
         run: docker network create edge 2>/dev/null || true
+
+      - name: Build MongoDB URI (URL-encoded credentials)
+        run: |
+          URI="mongodb://$(jq -rn --arg v "$MONGO_ROOT_USERNAME" '$v|@uri'):$(jq -rn --arg v "$MONGO_ROOT_PASSWORD" '$v|@uri')@mongo-dev:27017/?authSource=admin"
+          echo "::add-mask::$URI"
+          echo "MONGODB_URI=$URI" >> "$GITHUB_ENV"
 
       - name: Deploy dev stack
         run: docker compose -f docker-compose.dev.yml up -d --build

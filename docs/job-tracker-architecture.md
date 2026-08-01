@@ -509,13 +509,15 @@ Pas de registre d'images (ghcr.io) : le runner tourne déjà sur la machine cibl
 
 | Secret                                        | `production`                               | `development`                 | Consommé par                                              |
 | --------------------------------------------- | ------------------------------------------ | ----------------------------- | --------------------------------------------------------- |
-| `MONGO_ROOT_USERNAME` / `MONGO_ROOT_PASSWORD` | ✅ (valeurs prod)                          | ✅ (valeurs dev, différentes) | `mongo-prod` / `mongo-dev`, construction de `MONGODB_URI` |
+| `MONGO_ROOT_USERNAME` / `MONGO_ROOT_PASSWORD` | ✅ (valeurs prod)                          | ✅ (valeurs dev, différentes) | `mongo-prod` / `mongo-dev`, construction de `MONGODB_URI` (voir piège ci-dessous) |
 | `MONGODB_DB_NAME`                             | ✅                                         | ✅                            | `api-nest-*`, `web-next-*`                                |
 | `WEB_ANGULAR_ORIGIN`                          | ✅                                         | ✅                            | CORS `api-nest-*`                                         |
 | `CLOUDFLARE_API_TOKEN`                        | ✅ (scope Zone.DNS Edit)                   | —                             | conteneur `cloudflare-ddns`                               |
 | `CLOUDFLARE_DOMAINS`                          | ✅ (liste les 6 sous-domaines, prod + dev) | —                             | conteneur `cloudflare-ddns`                               |
 
 Le DDNS est un unique conteneur partagé (déployé avec l'Environment `production`), pas besoin de le dupliquer par environnement.
+
+**Piège : encodage de `MONGODB_URI`**. `docker-compose.*.yml` ne peut pas URL-encoder une valeur lors de l'interpolation `${...}` — si `MONGO_ROOT_PASSWORD` contient un caractère spécial (`@`, `:`, `/`, `%`...), une URI construite directement dans le compose file (`mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@...`) casse le parsing côté driver MongoDB (`MongoParseError: Password contains unescaped characters`). `deploy.yml` construit donc `MONGODB_URI` dans une étape dédiée (`jq -rn --arg v "$MONGO_ROOT_PASSWORD" '$v|@uri'` pour l'utilisateur et le mot de passe), masque la valeur assemblée (`::add-mask::`) et l'exporte via `$GITHUB_ENV` ; les fichiers compose consomment `${MONGODB_URI}` tel quel plutôt que de le reconstruire.
 
 ### Installer le runner self-hosted
 
