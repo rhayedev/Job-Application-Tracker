@@ -59,8 +59,8 @@ jobs:
       - name: Prune stale Docker build cache and images
         if: always()
         run: |
-          docker builder prune -f --filter "until=72h"
-          docker image prune -f --filter "until=72h"
+          docker builder prune -f --filter "until=24h"
+          docker image prune -f --filter "until=24h"
 
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
@@ -114,5 +114,5 @@ jobs:
       - name: Prune stale Docker build cache and images
         if: always()
         run: |
-          docker builder prune -f --filter "until=72h"
-          docker image prune -f --filter "until=72h"
+          docker builder prune -f --filter "until=24h"
+          docker image prune -f --filter "until=24h"
