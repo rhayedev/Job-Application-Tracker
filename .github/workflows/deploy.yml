@@ -71,6 +71,8 @@ jobs:
       MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
       MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
       WEB_ANGULAR_ORIGIN: ${{ secrets.WEB_ANGULAR_ORIGIN }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_DOMAINS: ${{ secrets.CLOUDFLARE_DOMAINS }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,8 +80,8 @@ jobs:
       - name: Ensure external "edge" network exists
         run: docker network create edge 2>/dev/null || true
 
-      - name: Deploy dev stack
-        run: docker compose -f docker-compose.dev.yml up -d --build
+      - name: Deploy edge (Caddy + DDNS) and dev stack
+        run: docker compose -f docker-compose.edge.yml -f docker-compose.dev.yml up -d --build
 
       - name: Wait for dev containers to be healthy
         shell: bash
@@ -89,7 +91,7 @@ jobs:
           for i in $(seq 1 12); do
             unhealthy=""
             for s in $services; do
-              cid=$(docker compose -f docker-compose.dev.yml ps -q "$s")
+              cid=$(docker compose -f docker-compose.edge.yml -f docker-compose.dev.yml ps -q "$s")
               health_status=$(docker inspect --format='{{.State.Health.Status}}' "$cid" 2>/dev/null || echo "unknown")
               if [ "$health_status" != "healthy" ]; then
                 unhealthy="$unhealthy $s($health_status)"
@@ -105,7 +107,7 @@ jobs:
           echo "Timed out waiting for dev services to become healthy"
           for s in $services; do
             echo "=== logs: $s ==="
-            docker compose -f docker-compose.dev.yml logs "$s" --tail=100
+            docker compose -f docker-compose.edge.yml -f docker-compose.dev.yml logs "$s" --tail=100
           done
           exit 1
 
