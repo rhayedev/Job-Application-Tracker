@@ -505,7 +505,7 @@ Deux jobs, chacun gated par un [Environment GitHub](https://docs.github.com/acti
 
 Pas de registre d'images (ghcr.io) : le runner tourne déjà sur la machine cible, construire et déployer sont la même étape.
 
-**Purge du build cache** : chaque `--build` accumule des layers Docker (BuildKit) sans jamais les libérer tout seul. Sur une VM à disque contraint (ex. 20G), ça finit par épuiser l'espace disque et faire échouer le build en plein milieu (`ENOSPC`), avec un runner qui plante sans log exploitable. Chaque job `deploy-*` termine donc par une étape `docker builder prune -f --filter "until=72h"` + `docker image prune -f --filter "until=72h"` (avec `if: always()`, pour purger même si le déploiement a échoué).
+**Purge du build cache** : chaque `--build` accumule des layers Docker (BuildKit) sans jamais les libérer tout seul. Sur une VM à disque contraint (ex. 20G), ça finit par épuiser l'espace disque et faire échouer le build en plein milieu (`ENOSPC`), avec un runner qui plante sans log exploitable. Chaque job `deploy-*` termine donc par une étape `docker builder prune -f --filter "until=24h"` + `docker image prune -f --filter "until=24h"` (avec `if: always()`, pour purger même si le déploiement a échoué). Le seuil de 24h a été resserré depuis 72h car la marge disque réelle sur `job-tracker-dev` (VM à 20G) s'est révélée trop faible avec un seuil plus large.
 
 ### Secrets par Environment GitHub
 
